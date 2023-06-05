@@ -155,13 +155,14 @@ public class GUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frameForInitialisation.dispose();
+
                 createMainWindow();
             }
         });
         forButton.add(buttonForNext, BorderLayout.SOUTH);
 
         // ---
-        JButton buttonForClear = new JButton("Click me to clear board."); // TODO
+        JButton buttonForClear = new JButton("Click me to clear board.");
         buttonForClear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -245,7 +246,8 @@ public class GUI {
         buttonForClear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                container = new ContainerTwoDimensionGraphic(columns, rows);
+                // container = new ContainerTwoDimensionGraphic(columns, rows);
+                container.clearAll();
                 west();
                 timer.stop();
             }

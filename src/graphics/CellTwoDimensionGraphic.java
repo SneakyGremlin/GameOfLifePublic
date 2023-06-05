@@ -21,6 +21,8 @@ import java.awt.event.MouseEvent;
 
 public class CellTwoDimensionGraphic extends cells.CellTwoDimension {
 
+    // private MouseAdapter adapter;
+
     private JPanel square;
     public static int DIMENSION = 10;
 
@@ -43,7 +45,7 @@ public class CellTwoDimensionGraphic extends cells.CellTwoDimension {
         }
         square.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) { // TODO
+            public void mouseClicked(MouseEvent e) {
                 //super.mouseClicked(e);
                 toggle();
             }
@@ -67,7 +69,7 @@ public class CellTwoDimensionGraphic extends cells.CellTwoDimension {
         square.setBackground(Color.white);
         square.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) { // TODO
+            public void mouseClicked(MouseEvent e) {
                 //super.mouseClicked(e);
                 toggle();
             }
@@ -122,15 +124,11 @@ public class CellTwoDimensionGraphic extends cells.CellTwoDimension {
         }
     }
 
+//    /**
+//     * Removes the ability to edit the cell's state manually after initialisation.
+//     */
+//    public void removeListener() {
+//        square.removeMouseListener(adapter);
+//    }
+
 }
-
-// >>> visibility is inherited from the container.
-
-
-//        if (rect.getBackground().equals(Color.white)) {
-//            rect.setBackground(Color.black);
-//            this.state = true;
-//        } else {
-//            rect.setBackground(Color.white);
-//            this.state = false;
-//        }

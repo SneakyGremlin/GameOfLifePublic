@@ -42,17 +42,38 @@ advance to the next generation as well.
 ---
 
 ### Notes on my implementation.
-...
+Primary Container class is `ContainerTwoDimensionGraphic`. <br/>
+Primary Contained class is `CellTwoDimensionGraphic`. <br/>
+Graphic User Interface is `GUI`. <br/>
+For the sake of brevity, I omit regurgitation of their implementation here. 
 
 #### \> Coordinate system
+The coordinate system I use is (to my knowledge) the most prevalent system in graphics applications. The top-left corner is the origin with values 0,0. Moving right increases the x values i.e. +,0, whilst moving down increases the y value, 0,+.
 
 #### \> Justification and solution for upholding of the ability to interact with the boxes after the initialisation of the grid 
+The justification is user-interface-friendly-making is good (imagine your initial pattern leads to a pattern and you wish to know how the pattern would have reacted if some other cells were present).<br/>
+
+My solution is simple: instead of store the anonymous inner `MouseAdapter` class inside `CellTwoDimensionGraphic`, via a field. 
+Then, just before `GUI's` method `createMainWindow()` is invoked (alongside the invocation to `dispose()`) invoke a method (that you would define), that loops through all the elements of `container` and invokes a method via them (which you will define as well) that
+removes the `MouseAdapter` from the cell (via invocation of removeMouseListener(MouseListener ...); MouseAdapter implements MouseListener). Finally, you would need to define new `ContainerTwoDimensionGraphic` and `CellTwoDimensionGraphic` constructors which do not
+endow the `successor's` elements with a Listener and invoke these in `ContainerTwoDimensionGraphic's` `update()` method. <br/>
+You can find vestiges of this code commented out. 
 
 #### \> The variance in the clear methods
-two methods for "clearing the board".
+I formulate two measures for "clearing the board": one is inside `ContainerTwoDimensionGraphic` (`clearAll()`) which is used for the action listener for its clear button. 
+The other measure can be found in the GUI class: for the clearBoard I simply define a new board (which gives each cell the default value of false and white). <br\>
+Both methods accomplish the goal but `ContainerTwoDimensionGraphic's` is by far better (owing to space complexity).
 
-#### \> Blunder prime
+#### \> Blunder Prime
+Seeing the number of times I had to perform a nested iteration, I may as well have implemented the Iterator pattern. 
 
+#### \> Improvement on Implementation
+There was no need to create the class `CellTwoDimensionGraphic` at all. The reason why this class and `ContainerTwoDimensionGraphic` have 
+"graphic" appended to them is because non graphic versions existed. What I should have done was keep the simple non graphic implementations 
+and had a nested array of `JPanels` inside `GUI`. Updating the screen would then just have required accessing the cell states (this does introduce a layered dependency...).
+(Note that this implementation still allows for colorful cells (see "Extensibility" section).
+
+---
 ### Extensibility
 1. The algorithm that is used by the method (in class `ContainerTwoDimensionGraphic`), `condCheckerAndUpdater` is where the criteria specified in the 
 introductory section is implemented. It can be modified to construct an altered version of the GameOfLife. <br/>
@@ -76,12 +97,6 @@ update method (updates the display) for the `GUI` which is `west()`.
 
 2. I feel pride over the lack of coupling between `CellTwoDimensionGraphic` and `ContainerTwoDimensionGraphic`: no direct reference to a member variable of `CellTwoDimesionGraphic` is ever exposed in this relationship and all bookkeeping is done by the cell itself (refer to the extensibility section above about adding colours to the cells).
 
-3. CellTwoDimension state and rect class are so closely coupled I contemplated creating a new class for them but circumvented this via acknowledging that I can set reminders to keep both in lockstep (this is a joke...).
+3. `CellTwoDimension's` members `state` and `rect` are so closely coupled I contemplated creating a new class for them but circumvented this via acknowledging that I can set reminders to keep both in lockstep (this is a joke...).
 
-[^1] : A possible solution would entail having the frame with the grid, `westForMatrix`, as a field within the `GUI` class' `container` but this solution is a prime example of the Cobra effect (out of the frying pan into the fire). 
-
-!!!!!!!!!!!11 Unsightly readaptation of the grid matrix
-
-
-
-./ means src
+[^1] : A possible solution would entail having the frame with the grid, `westForMatrix`, as a field within the `GUI` class' `container` but this solution is a prime example of the Cobra effect (out of the frying pan into the fire).

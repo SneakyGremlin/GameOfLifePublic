@@ -73,7 +73,3 @@ public class CellTwoDimension {
         this.state = state;
     }
 }
-
-// TODO boolean or Boolean?
-
-// TODO override hashcode and equals and refine the for loop inside container
