@@ -1,29 +1,38 @@
-package ui.graphics;
-
-// TODO implement iterable and skip manual iteration
-// TODO potential for optimisation by splitting the board into bits
+package graphics;
 
 import exceptions.InvariantBroken;
 
-import java.awt.*;
 import java.util.ArrayList;
-
-
-// TODO specification for coordiante system
 
 /**
  * Primary Container for a Two Dimensional Version of Game of Life.
  *
  * Bears mentioning that since computer memory is unfortunately a finite construct I made the design decision to make
- * the container "wrap around".
+ * the container "wrap around". So when the east ends the west begins; likewise for north and south. Corners wrap around diagonally,
+ * therefore, the NorthWest Corner will wrap to the SouthEast Corner; likewise for NE AND SW.
+ *
+ * attributes:
+ *          container: is a nested array of format row and then column i.e. container.get(row).get(column) which contains CellTwoDimensionGraphic.
+ *          xDimension: is the number of columns.
+ *          yDimension: is the number of rows.
+ *          theSuccessor: the class has a reflexive association with itself. Could have chosen to have another container but this is more extensible.
+ *          n.b. xDimension and yDimension actually refer to the number of rows/columns. NO ZERO IS NOT ONE.
  */
-
 public class ContainerTwoDimensionGraphic {
 
     private ArrayList<ArrayList<CellTwoDimensionGraphic>> container;
     private int xDimension;
     private int yDimension;
     private ContainerTwoDimensionGraphic theSuccessor;
+
+    /** Constructor
+     *
+     * @param xDimension is the column number.
+     * @param yDimension is the row number.
+     *
+     * successor remains null
+     * container is populated with CellsTwoDimensionGraphic
+     */
 
     public ContainerTwoDimensionGraphic(int xDimension, int yDimension) {
         this.container = new ArrayList<>();
@@ -33,10 +42,10 @@ public class ContainerTwoDimensionGraphic {
             ArrayList<CellTwoDimensionGraphic> temp = new ArrayList<>();
             for (int y = 0; y < yDimension; y++) {
                 try {
-                    CellTwoDimensionGraphic cell = new CellTwoDimensionGraphic(false, x, y);
+                    CellTwoDimensionGraphic cell = new CellTwoDimensionGraphic(x, y);
                     temp.add(cell);
                 } catch (InvariantBroken e) {
-                    // nothing
+                    // nothing since this was for construction purposes and perhaps for extensibility.
                 }
             }
             container.add(temp);
@@ -44,30 +53,33 @@ public class ContainerTwoDimensionGraphic {
     }
 
     /**
-     * For optimization and to mitigate against testing tedium "update" is decomposed into two methods "updateBorders"
-     * and "updateOthers."
+     * For optimization and to mitigate against testing tedium, "update" is decomposed into two methods "updateBorders"
+     * and "updateOthers".
+     *
+     * The successor is not instantiated and by the end of this method it's container will have supplanted this' container.
      */
     public void update() {
         theSuccessor = new ContainerTwoDimensionGraphic(this.xDimension, this.yDimension);
         updateBorders();
         updateOthers();
-        this.container = theSuccessor.container; // TODO check
+        this.container = theSuccessor.container;
         // >>> Java has GarbageCollection otherwise I would've done the freeing myself.
     }
 
-    /** updateOthers updates all the cells apart from the ones at the borders. Utilises simple, beauteous, but precarious quadruple
-     * nested iteration.
+    /**
+     * updateOthers updates all the cells apart from the ones at the borders. Utilises simple, beauteous, but precarious quadruple
+     * nested iteration (think you have a rectangle, and you cut off the border)
      *
      * A bit of a side note but if you're into asymptotics, despite the fact there are 4 for_loops the method itself is still
      * O(n) where n is the no of cells. GoBsMaCkInG, right?
      *
      */
     private void updateOthers() {
-        for (int x = 1; x < xDimension - 1; x++) { // !!! TODO
+        for (int x = 1; x < xDimension - 1; x++) {
             for (int y = 1; y < yDimension - 1; y++) {
                 int count = 0;
                 CellTwoDimensionGraphic cellCurrNotUpdate = (this.container.get(x)).get(y);
-                CellTwoDimensionGraphic cellCurrToUpdate = (this.theSuccessor.container.get(x)).get(y); // !!! >>> the successor's is updated
+                CellTwoDimensionGraphic cellCurrToUpdate = (this.theSuccessor.container.get(x)).get(y); // >>> the successor's is updated
                 for (int x_manual = x - 1; x_manual < x + 2; x_manual++) {
                     for (int y_manual = y - 1; y_manual < y + 2; y_manual++) {
                         if (x != x_manual) {
@@ -82,8 +94,9 @@ public class ContainerTwoDimensionGraphic {
     }
 
     /**
-     * updateBorders is separate since the container wraps around, and it's a wee bit hard (well more like leads to
-     * unsightly code) to account for that through normal iteration.
+     * updateBorders() is separate since the container wraps around, and it's a wee bit hard (well more like leads to
+     * unsightly code) to account for that through normal iteration (too many ifs). Is further deconstructed into updateCorner()
+     * and updateStripsSansCorners().
      */
     private void updateBorders() {
 
@@ -92,6 +105,9 @@ public class ContainerTwoDimensionGraphic {
         updateStripsSansCorners();
     }
 
+    /**
+     * method updates the borders without the corners. is deconstructed into four respective methods.
+     */
     private void updateStripsSansCorners() {
 
         topmostRow();
@@ -104,7 +120,11 @@ public class ContainerTwoDimensionGraphic {
     }
 
     // >>> for testing the four methods below change the access modifier to public and uncomment the two statements at the
-    //      top and the bottom of each method
+    //      top and the bottom of each method; remember to call update.
+
+    /**
+     * wraps with the leftmost Column.
+     */
 
     private void rightmostColumn() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
@@ -132,6 +152,10 @@ public class ContainerTwoDimensionGraphic {
         //this.container = theSuccessor.container;
     }
 
+    /**
+     * wraps with the rightmost column
+     */
+
     private void leftmostColumn() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
@@ -157,6 +181,9 @@ public class ContainerTwoDimensionGraphic {
         //this.container = theSuccessor.container;
     }
 
+    /**
+     * wraps with the topmost Row.
+     */
     private void bottommostRow() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
@@ -182,6 +209,9 @@ public class ContainerTwoDimensionGraphic {
         //this.container = theSuccessor.container;
     }
 
+    /**
+     * wraps with the bottommost row.
+     */
     private void topmostRow() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
@@ -207,7 +237,20 @@ public class ContainerTwoDimensionGraphic {
         //this.container = theSuccessor.container;
     }
 
-
+    /**
+     * the corners are special: a 3 by 3 grid of cells with a corner cell at the middle wraps with all three other corners of the board
+     * Consider the following matrix at the bottomright corner of the board.
+     *
+     *          NNL
+     *          MML
+     *          TTD
+     *
+     *          >>> N means normal coordinate; intuitive and adjacent
+     *          >>> M means the middle cell i.e. the corner cell
+     *          >>> L means the cell that exists at the first/zeroth (left) column (hence the "wrapping around")
+     *          >>> T means the cell that exists at the first/zeroth (top) row
+     *          >>> D stands for diagonal; refers to the cell at the NorthWest corner of the board.
+     */
     private void updateCorners() {
 
         northwest();
@@ -221,7 +264,11 @@ public class ContainerTwoDimensionGraphic {
     }
 
     // >>> for testing the four methods below uncomment the two statements at the top and bottom of each method AND change
-    //      access modifier to private
+    //      access modifier to private; call update too
+
+    /**
+     * call condCheckerAndUpdater appropriate number of times and with appropriate parameters.
+     */
     private void northwest() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
@@ -246,6 +293,9 @@ public class ContainerTwoDimensionGraphic {
         //this.container = theSuccessor.container;
     }
 
+    /**
+     * call condCheckerAndUpdater appropriate number of times and with appropriate parameters.
+     */
     private void northeast() {
         // theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
@@ -273,6 +323,9 @@ public class ContainerTwoDimensionGraphic {
         //this.container = theSuccessor.container;
     }
 
+    /**
+     * call condCheckerAndUpdater appropriate number of times and with appropriate parameters.
+     */
     private void southwest() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
@@ -299,6 +352,9 @@ public class ContainerTwoDimensionGraphic {
         //this.container = theSuccessor.container;
     }
 
+    /**
+     * call condCheckerAndUpdater appropriate number of times and with appropriate parameters.
+     */
     private void southeast() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
@@ -345,23 +401,16 @@ public class ContainerTwoDimensionGraphic {
             beingUpdated.setState(false);
         }
 
-        if (beingUpdated.getState()) {
-            beingUpdated.getRect().setBackground(Color.black);
-        } else {
-            beingUpdated.getRect().setBackground(Color.white);
-        }
-        // >>> an attempt at refining the logic encapsulated above ^^^
-//        if (((beingChecked.getState() && count >= 2) || !beingChecked.getState() &&count >= 3) && count < 4 ) {
-//            beingUpdated.setState(true);
+        // >>> the code below is what the decoupling section in README was referring to.
+//        if (beingUpdated.getState()) {
+//            beingUpdated.getSquare().setBackground(Color.black);
 //        } else {
-//            beingUpdated.setState(false);
+//            beingUpdated.getSquare().setBackground(Color.white);
 //        }
+
+        beingUpdated.update();
+
         return count;
-
-
-        // >>> for testing
-//        beingUpdated.setState(true);
-//        return 0;
     }
 
 
@@ -403,14 +452,19 @@ public class ContainerTwoDimensionGraphic {
     public CellTwoDimensionGraphic getCell(int x, int y) {
         return container.get(x).get(y);
     }
+
+
+    /**
+     * Sets all members of the container to their default states i.e. with rect's color white and state false.
+     */
+    public void clearAll() {
+        for (int x = 0; x < xDimension; x++) {
+            for (int y = 0; y < yDimension; y++) {
+                CellTwoDimensionGraphic cell = container.get(x).get(y);
+                cell.setState(false);
+                cell.update();
+            }
+        }
+
+    }
 }
-
-// Why cant i use [] for access? !!! TODO
-
-
-// !!!! TODO x!=x and y!=y
-
-// TODO == is used for primitives yes?
-// TODO default access modifier
-// TODO automated testing; automated construction of getters and setters
-// TODO singleton pattern private constructor... constructors return a new object anyho... is there a defualt constructor?

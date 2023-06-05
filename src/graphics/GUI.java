@@ -1,12 +1,35 @@
-package ui.graphics;
-
-import container.ContainerTwoDimension;
-import exceptions.InvariantBroken;
+package graphics;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * The class responsible for the Graphics User Interface.
+ *
+ * Attributes:
+ * There are three JFrames:
+ *                  - frameForParameters: this is used to set the dimensions of the grid
+ *                  - frameForInitialisation: this is used to set the initial state of the board (via interacting with the grid)
+ *                  - mainFrame: this is the primary frame where all the "action" takes place i.e. where you will see Conway's Game of life... come to life!
+ * There are two JPanels (which both reside inside mainFrame):
+ *                  - westForMatrix: this panel is responsible for the grid of cells; its Layout Manager is GridLayout and its rows and columns are determined by the user input.
+ *                  - eastForButtons: this is where all the buttons (see below) reside.
+ * There are five JButtons:
+ *                  - next: this button's action is to call update() of the container variable. It moves ahead a generation.
+ *                  - clear: this button's action is to clear the game board.
+ *                  - toggleTimer: toggles the timer.
+ *                  - quickenTimer: increases the timer's speed up to a maximum.
+ *                  - slowTimer: decreases the timer's speed up to a minimum.
+ * There is one Timer:
+ *                  - timer: calls container's update() at intervals.
+ *  - container is of type ContainerTwoDimensionGraphic i.e. the GUI stores the container (composition aggregation)
+ *  - rows: no of rows of the grid.
+ *  - columns: no of columns of the grid.
+ *          ^^^ rows and columns are for convenience: container's getters could satisfy requirements easily, but a primary window container
+ *          should know the attributes of its contained Panels.
+ *  - DEFAULT_DIMENSION: dimensions of the grid, should the user input erroneous data during initialising.
+ */
 
 public class GUI {
 
@@ -14,9 +37,9 @@ public class GUI {
     JFrame frameForInitialisation;
     JFrame mainFrame;
     JPanel westForMatrix;
-    JPanel eastForButton;
+    JPanel eastForButtons;
     JButton next;
-    JButton clear;
+    JButton buttonForClear;
     JButton toggleTimer;
     JButton quickenTimer;
     JButton slowTimer;
@@ -26,16 +49,32 @@ public class GUI {
     ContainerTwoDimensionGraphic container;
     int rows;
     int columns;
-    int cellDimension = 15;
 
+
+    private static int DEFAULT_DIMENSION = 50;
+
+    /** Constructor
+     *
+     * Begins the EventDispatchThread (well invokes the method that does the aforementioned).
+     */
     public GUI() {
         initialise();
     }
 
+    /**
+     * This produces and populates the frameForParameters i.e. the frame responsible for discerning how many rows and columns
+     * the user wants.
+     * Implements local JPanels, JLabels, JTextFields, JButtons
+     * Implements error handling for invalid input by reverting to default values (50, 50).
+     *
+     * Upon termination of this method, the container should have parameters to begin construction.
+     *
+     * Method is terminated by the button press which disposes of the frameForParameters and invokes method initialisingMatrix().
+     */
+
     public void initialise() {
         frameForParameters = new JFrame("Conrad's Game of Life");
         frameForParameters.setLocationRelativeTo(null);
-        //frameForParameters.setSize(new Dimension(400, 100)); // !!!
 
         JPanel upper = new JPanel();
         JPanel lower = new JPanel();
@@ -63,8 +102,8 @@ public class GUI {
                         columns = Integer.valueOf(xDimensionEntry.getText().strip());
                     } catch (NumberFormatException exception) {
                         JOptionPane.showMessageDialog(frameForParameters, "You entered invalid dimensions. Reverting to Default Dimensions"); // !!!
-                        rows = 50;
-                        columns = 50;
+                        rows = DEFAULT_DIMENSION;
+                        columns = DEFAULT_DIMENSION;
                     }
                 //frameForParameters.dispatchEvent(new WindowEvent(frameForParameters, WindowEvent.WINDOW_CLOSED)); // !!! >>>
                 frameForParameters.dispose();
@@ -80,6 +119,22 @@ public class GUI {
         frameForParameters.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
+    /**
+     * REQUIRES: invoked from initialise after proper ActionEvent.
+     *
+     * Utilises JPanels, JButton.
+     *
+     * Constructs the container class and creates a dependency between each empty location in the grid with the square member
+     * variable of the container's elements. This is much better illustrated via the UML Diagram. Note this results in more associations
+     * with JFrame but only dependencies on CellTwoDimensionGraphic (the association with ContainerTwoDimensionGraphic is still present).
+     *
+     * After the above one has an interactive grid: it may be populated as seen fit.
+     *
+     * Clicking the appropriate button dispatches the next method createMainWindow()
+     *
+     * n.b. please note the implementation of the action performed for buttonForClear here and in east(). Then refer to README's "The Variance in clear methods".
+     *
+     */
     private void initialisingMatrix() {
         frameForInitialisation = new JFrame("Initial World State");
         frameForInitialisation.setLayout(new BorderLayout(5, 5));
@@ -89,7 +144,7 @@ public class GUI {
         container = new ContainerTwoDimensionGraphic(rows, columns);
         for (int r = 0; r < rows; r++){
             for (int c = 0; c < columns; c++) {
-                panelForTheInteractableGrid.add(container.getCell(c, r).getRect());
+                panelForTheInteractableGrid.add(container.getCell(c, r).getSquare());
             }
         };
 
@@ -104,6 +159,17 @@ public class GUI {
             }
         });
         forButton.add(buttonForNext, BorderLayout.SOUTH);
+
+        // ---
+        JButton buttonForClear = new JButton("Click me to clear board."); // TODO
+        buttonForClear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                container.clearAll();
+            }
+        });
+        forButton.add(buttonForClear, BorderLayout.NORTH);
+
         frameForInitialisation.add(forButton, BorderLayout.EAST);
 
         frameForInitialisation.add(panelForTheInteractableGrid);
@@ -114,35 +180,58 @@ public class GUI {
         frameForInitialisation.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
+    /**
+     * This constructs the main JFrame whereupon Conway's game of life is beheld.
+     *
+     * "contains" the attributes westForMatrix and leftForButton
+     *
+     *  method invocations west and east respectively construct these frames whereafter they are added herein.
+     *
+     */
     private void createMainWindow() {
         mainFrame = new JFrame("Conrad's Game Of Life");
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         // mainFrame.setLocationRelativeTo(null);
         westForMatrix = new JPanel(new GridLayout(rows, columns, 3, 3));
-        eastForButton = new JPanel(new GridLayout(10, 1, 3, 3));
+        eastForButtons = new JPanel(new GridLayout(10, 1, 3, 3));
 
         west();
         east();
 
         mainFrame.add(westForMatrix, BorderLayout.WEST);
-        mainFrame.add(eastForButton, BorderLayout.EAST);
+        mainFrame.add(eastForButtons, BorderLayout.EAST);
         mainFrame.pack();
         mainFrame.setResizable(false);
         mainFrame.setVisible(true);
     }
+
+    /**
+     * I include the remove invocation on the top is for better understanding.
+     *
+     * I concede this particular implementation is not ideal, however it builds on how update() works inside ContainerTwoDimensionGraphic.
+     * A new container is created with its own Cells and thus JPanels. and the GUI needs access to them.
+     *
+     * This is in line with minimal computations on the graphics end.
+     *
+     * I am aware this solution has 0(n) space complexity.
+     */
 
     private void west() {
         mainFrame.remove(westForMatrix);
         westForMatrix = new JPanel(new GridLayout(rows, columns, 3, 3));
         for (int r = 0; r < rows; r++){
             for (int c = 0; c < columns; c++) {
-                westForMatrix.add(container.getCell(c, r).getRect());
+                westForMatrix.add(container.getCell(c, r).getSquare());
             }
         }
         mainFrame.add(westForMatrix, BorderLayout.WEST);
         mainFrame.pack();
     }
 
+    /**
+     * Initialises all the buttons and the frameForButtons. Note the concerted calls to update() for container and west().
+     * container performs the algorithmic computations necessary to advance to the next generation; west() displays the result.
+     */
     private void east() {
         next = new JButton("Click to proceed.");
         next.addActionListener(new ActionListener() {
@@ -152,8 +241,8 @@ public class GUI {
                 west();
             }
         });
-        clear = new JButton("Click to clear board");
-        clear.addActionListener(new ActionListener() {
+        buttonForClear = new JButton("Click to clear board");
+        buttonForClear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 container = new ContainerTwoDimensionGraphic(columns, rows);
@@ -197,48 +286,16 @@ public class GUI {
                 }
             }
         });
+        // these could be variable hence the repetition.
         quickenTimer.setSize(new Dimension(30, 10));
         slowTimer.setSize(new Dimension(30, 10));
         toggleTimer.setSize(new Dimension(30, 10));
         next.setSize(new Dimension(30, 10));
-        clear.setSize(new Dimension(30, 10));
-        eastForButton.add(toggleTimer);
-        eastForButton.add(quickenTimer);
-        eastForButton.add(slowTimer);
-        eastForButton.add(next);
-        eastForButton.add(clear);
+        buttonForClear.setSize(new Dimension(30, 10));
+        eastForButtons.add(toggleTimer);
+        eastForButtons.add(quickenTimer);
+        eastForButtons.add(slowTimer);
+        eastForButtons.add(next);
+        eastForButtons.add(buttonForClear);
     }
 }
-
-// String.toLowerCase()
-
-// TODO what is modality
-//public class DialogExample {
-//    private static JDialog d;
-//    DialogExample() {
-//        JFrame f= new JFrame();
-//        d = new JDialog(f , "Dialog Example", true);
-//        d.setLayout( new FlowLayout() );
-//        JButton b = new JButton ("OK");
-//        b.addActionListener ( new ActionListener()
-//        {
-//            public void actionPerformed( ActionEvent e )
-//            {
-//                DialogExample.d.setVisible(false);
-//            }
-//        });
-//        d.add( new JLabel ("Click button to continue."));
-//        d.add(b);
-//        d.setSize(300,300);
-//        d.setVisible(true);
-//    }
-
-// begins with a window that is a dialog with input asking for array dimensions
-// disappears for actual window using dimensions above.
-// window has a nested label which extends the array of pixels above
-
-// the cellTwoDimension is extended as well; introduce a graphicsCell which is a rectangle
-// label contains
-
-// array of squares with borders; preset the dimension;
-// there is a label on a window; the label extends the array of pixels aforementioned

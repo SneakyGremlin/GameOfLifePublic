@@ -1,4 +1,4 @@
-package classes.cells;
+package cells;
 
 import exceptions.InvariantBroken;
 

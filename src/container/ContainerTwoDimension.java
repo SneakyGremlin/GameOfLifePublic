@@ -3,7 +3,7 @@ package container;
 // TODO implement iterable and skip manual iteration
 // TODO potential for optimisation by splitting the board into bits
 
-import classes.cells.CellTwoDimension;
+import cells.CellTwoDimension;
 import exceptions.InvariantBroken;
 
 import java.util.ArrayList;
@@ -89,10 +89,10 @@ public class ContainerTwoDimension {
 
         updateCorners();
 
-        updateStripsSansCorners();
+        updateBordersSansCorners();
     }
 
-    private void updateStripsSansCorners() {
+    private void updateBordersSansCorners() {
 
         topmostRow();
 
@@ -210,19 +210,19 @@ public class ContainerTwoDimension {
 
     private void updateCorners() {
 
-        northwest();
+        northwestCorner();
 
-        northeast();
+        northeastCorner();
 
-        southwest();
+        southwestCorner();
 
-        southeast();
+        southeastCorner();
 
     }
 
     // >>> for testing the four methods below uncomment the two statements at the top and bottom of each method AND change
     //      access modifier to private
-    private void northwest() {
+    private void northwestCorner() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
 
@@ -246,7 +246,7 @@ public class ContainerTwoDimension {
         //this.container = theSuccessor.container;
     }
 
-    private void northeast() {
+    private void northeastCorner() {
         // theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
 
@@ -273,7 +273,7 @@ public class ContainerTwoDimension {
         //this.container = theSuccessor.container;
     }
 
-    private void southwest() {
+    private void southwestCorner() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
 
@@ -299,7 +299,7 @@ public class ContainerTwoDimension {
         //this.container = theSuccessor.container;
     }
 
-    private void southeast() {
+    private void southeastCorner() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
 
