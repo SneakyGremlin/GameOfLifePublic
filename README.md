@@ -18,13 +18,13 @@ In essence, the game of life is a cellular automaton that was devised by John Co
 the automaton's grid undergoes changes. <br/>
 Numerous patterns are possible:
 1. "Gliders": this initial pattern will "glide" across the screen. <br/>
-![Glider](./images/Gliderr.png)
+![Glider](./Glider.png)
 
 2. "Oscillators": this initial pattern will oscillate back and forth between states. <br/>
-![Oscillator](./images/Oscillatorr.png)
+![Oscillator](./Oscillator.png)
 
 3. ad infinitum (nauseaum, really; this pattern though is intended to appear as the infinity symbol results in a permanent state... for infinity). <br/>
-![infinity](./images/Infinityy.png)
+![infinity](./Infinity.png)
 
 > n.b. I restricted myself to three examples solely for brevity. I highly recommend referring to [Wikipedia's guide to Conway's 
 Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) to explore even more interesting patterns. </br>
