@@ -100,3 +100,9 @@ update method (updates the display) for the `GUI` which is `west()`.
 3. `CellTwoDimension's` members `state` and `rect` are so closely coupled I contemplated creating a new class for them but circumvented this via acknowledging that I can set reminders to keep both in lockstep (this is a joke...).
 
 [^1] : A possible solution would entail having the frame with the grid, `westForMatrix`, as a field within the `GUI` class' `container` but this solution is a prime example of the Cobra effect (out of the frying pan into the fire).
+
+
+# What's next?
+I wish to implement the Game of Life in a 3-Dimensional Space. I already have classes (that you won't see since they're in the private repository).
+By this time, I am sussing out how exactly I should implement displaying three-dimensionality: should it be slices of 2D matrices or is it time I 
+recoursed to 3D graphics packages.
