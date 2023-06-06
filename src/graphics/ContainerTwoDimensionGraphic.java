@@ -253,13 +253,13 @@ public class ContainerTwoDimensionGraphic {
      */
     private void updateCorners() {
 
-        northwest();
+        northwestCorner();
 
-        northeast();
+        northeastCorner();
 
-        southwest();
+        southwestCorner();
 
-        southeast();
+        southeastCorner();
 
     }
 
@@ -269,7 +269,7 @@ public class ContainerTwoDimensionGraphic {
     /**
      * call condCheckerAndUpdater appropriate number of times and with appropriate parameters.
      */
-    private void northwest() {
+    private void northwestCorner() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
 
@@ -296,7 +296,7 @@ public class ContainerTwoDimensionGraphic {
     /**
      * call condCheckerAndUpdater appropriate number of times and with appropriate parameters.
      */
-    private void northeast() {
+    private void northeastCorner() {
         // theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
 
@@ -326,7 +326,7 @@ public class ContainerTwoDimensionGraphic {
     /**
      * call condCheckerAndUpdater appropriate number of times and with appropriate parameters.
      */
-    private void southwest() {
+    private void southwestCorner() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
 
@@ -355,7 +355,7 @@ public class ContainerTwoDimensionGraphic {
     /**
      * call condCheckerAndUpdater appropriate number of times and with appropriate parameters.
      */
-    private void southeast() {
+    private void southeastCorner() {
         //theSuccessor = new ContainerTwoDimension(xDimension, yDimension);
 
 

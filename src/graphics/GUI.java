@@ -72,7 +72,7 @@ public class GUI {
      * Method is terminated by the button press which disposes of the frameForParameters and invokes method initialisingMatrix().
      */
 
-    public void initialise() {
+    private void initialise() {
         frameForParameters = new JFrame("Conrad's Game of Life");
         frameForParameters.setLocationRelativeTo(null);
 

@@ -23,7 +23,7 @@ public class CellTwoDimensionGraphic extends cells.CellTwoDimension {
 
     // private MouseAdapter adapter;
 
-    private JPanel square;
+    private JPanel square = new JPanel();
     public static int DIMENSION = 10;
 
     /** Constructor  intended for extensibility: i.e. if one wishes to preload a configuration.
@@ -36,7 +36,6 @@ public class CellTwoDimensionGraphic extends cells.CellTwoDimension {
 
     public CellTwoDimensionGraphic(boolean initial, int x, int y) throws InvariantBroken {
         super(initial, x, y);
-        square = new JPanel();
         square.setSize(new Dimension(DIMENSION, DIMENSION));
         if (!initial) {
             square.setBackground(Color.white);
