@@ -5,7 +5,7 @@
 > Please refer to the UML Diagram in concert with this for greater illumination. 
 (Please note that I have attempted to adhere as closely to the specifications in [The UML 2 class diagram](https://developer.ibm.com/articles/the-class-diagram/), however I have taken a liberty in the association section.)<br/> 
 > The UML Diagram was constructed via [Diagrams.net](https://app.diagrams.net/)) <br/>
-> Small caveat: the multiplicity values on the far left indicate the actual static behaviour of the classes: the members can be null and become non-null at various points <br/>
+> Small caveat: the multiplicity values on the far left indicate the actual static behaviour of the classes: the members can be null and become non-null at various points; also note that at any one time GUI has only one JFrame (or none) <br/>
 > The reason GUI has that particular multiplicity value with JLabel is because one of its member JPanels (the panel for the grid/east panel) holds references to a multitude of JPanels whose exact number depends on the user input. 
 > I may have ommited some methods. 
 
